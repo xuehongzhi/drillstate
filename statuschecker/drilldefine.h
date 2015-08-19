@@ -1,0 +1,12 @@
+#pragma  once
+enum DrillStatus
+{
+	NOTCHECKED,
+	UNKOWN,
+	DRILLING,
+	DRILL_UP,
+	DRILL_DOWN,
+	REAMING_OFF,
+	CIRCULATION,
+	APPEND_TUEBE
+};
