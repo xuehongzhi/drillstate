@@ -73,4 +73,5 @@ void CDrillStateManager::Init()
 	pState = new CAppendTubeState();
 	m_DrillStates["½Óµ¥¸ù"] = pState;
 	pState1->AddNextState(pState);
+
 }

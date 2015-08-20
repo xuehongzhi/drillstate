@@ -3,50 +3,83 @@
 #include "drillItem.h"
 #include <float.h>
 
-CDrillState::CDrillState(DrillStatus statcode):m_pNext(NULL),m_Status(statcode)
+using namespace boost::icl;
+CDrillState::CDrillState(DrillStatus statcode):m_pNext(NULL)
+	,m_Status(statcode)
+	,m_DepthInterval(0,FLT_MAX,interval_bounds::closed())
+	,m_SppInterval(0,FLT_MAX,interval_bounds::closed())
+	,m_WobInterval(0,FLT_MAX,interval_bounds::closed())
+	,m_WohInterval(0,FLT_MAX,interval_bounds::closed())
+
 {
-	m_fDepthGap[0]=0;
-	m_fDepthGap[1]=FLT_MAX;
-
-	m_fSpp[0]=0;
-	m_fSpp[1]=FLT_MAX;
-
-	m_fWob[0]=0;
-	m_fWob[1]=FLT_MAX;
-
-	m_fWoh[0]=0;
-	m_fWoh[1]=FLT_MAX;
+	
 }
 
 
 CDrillState::~CDrillState(void)
 {
-
-}
-
-void CDrillState::SetDepthGap(float fMin,float fMax)
-{
-	m_fDepthGap[0] = fMax;
-	m_fDepthGap[1] = fMin;
 }
 
 
-void CDrillState::SetSpp(float fMin,float fMax)
+bool CDrillState::LoadBounds(INTERVAL_TYPE inttype,	boost::icl::interval_bounds&  bounds)
 {
-	m_fSpp[0] = fMax;
-	m_fSpp[1] = fMin;
+	switch (inttype)
+	{
+	case OPEN_INTERVAL:
+		bounds = boost::icl::interval_bounds::open();
+		break;
+	case RIGHT_INTERVAL:
+		bounds = boost::icl::interval_bounds::right_open();
+		break;
+	case LEFT_INTERVAL:
+		bounds = boost::icl::interval_bounds::left_open();
+		break;
+	case CLOSED_INTERVAL:
+		bounds = boost::icl::interval_bounds::closed();
+		break;
+	default:
+		break;
+	}
+	return true;
 }
 
-void CDrillState::SetWob(float fMin,float fMax)
+void CDrillState::SetDepthGap(float fMin,float fMax,INTERVAL_TYPE inttype)
 {
-	m_fWob[0] = fMax;
-	m_fWob[1] = fMin;
+
+	boost::icl::interval_bounds  bounds;
+	LoadBounds(inttype,bounds);
+	m_DepthInterval = boost::icl::construct<boost::icl::continuous_interval<float>>(fMin,fMax,bounds);
+
 }
 
-void CDrillState::SetWoh(float fMin,float fMax)
+
+void CDrillState::SetSpp(float fMin,float fMax,INTERVAL_TYPE inttype)
 {
-	m_fWoh[0] = fMax;
-	m_fWoh[1] = fMin;
+
+	boost::icl::interval_bounds  bounds;
+	LoadBounds(inttype,bounds);
+
+	m_SppInterval = boost::icl::construct<boost::icl::continuous_interval<float>>(fMin,fMax,bounds);
+
+}
+
+void CDrillState::SetWob(float fMin,float fMax,INTERVAL_TYPE inttype)
+{
+
+
+	boost::icl::interval_bounds  bounds;
+	LoadBounds(inttype,bounds);
+
+	m_WobInterval = boost::icl::construct<boost::icl::continuous_interval<float>>(fMin,fMax,bounds);
+}
+
+void CDrillState::SetWoh(float fMin,float fMax,INTERVAL_TYPE inttype)
+{
+
+	boost::icl::interval_bounds  bounds;
+	LoadBounds(inttype,bounds);
+
+	m_WohInterval = boost::icl::construct<boost::icl::continuous_interval<float>>(fMin,fMax,bounds);
 }
 
 void CDrillState::AddNextState(CDrillState* pNext)
@@ -65,14 +98,11 @@ DrillStatus CDrillState::TestMatch(std::vector<CDrillItem>& items)
 
 bool  CDrillState::Match( CDrillItem& item)
 {
-	return item.GetDepthGap()<=m_fDepthGap[1]
-	&& item.GetDepthGap()>=m_fDepthGap[0]
-	&& item.m_fSpp <=m_fSpp[1]
-	&& item.m_fSpp >= m_fSpp[0]
-	&& item.m_fWob <= m_fWob[1]
-	&& item.m_fWob >= m_fWob[0]
-	&& item.m_fBkh <= m_fWoh[1]
-	&& item.m_fBkh >= m_fWoh[0];
+	return  boost::icl::contains(m_DepthInterval,item.GetDepthGap())
+		&& boost::icl::contains(m_SppInterval,item.m_fSpp)
+		&& boost::icl::contains(m_WobInterval,item.m_fWob)
+		&& boost::icl::contains(m_SppInterval,item.m_fBkh);
+
 }
 
 bool CDrillState::Match(std::vector<CDrillItem>& items)

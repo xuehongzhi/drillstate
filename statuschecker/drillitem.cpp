@@ -7,7 +7,6 @@
 
 CDrillItem::CDrillItem()
 {
-
 }
 
 CDrillItem::~CDrillItem()
