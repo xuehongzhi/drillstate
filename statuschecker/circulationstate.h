@@ -7,6 +7,9 @@ class CCirculationState:public CDrillState
 public:
 	CCirculationState(void);
 	virtual ~CCirculationState(void);
+protected:
+	using CDrillState::Match;
+	virtual bool  Match(std::vector<CDrillItem>& items);
 };
 
 

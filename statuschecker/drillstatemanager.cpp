@@ -6,7 +6,7 @@
 #include "circulationstate.h"
 #include "reamingoffstate.h"
 #include "AppendTubeState.h"
-#include "undrillingstate.h"
+
 
 
 CDrillStateManager::CDrillStateManager(void)
@@ -17,7 +17,6 @@ CDrillStateManager::CDrillStateManager(void)
 CDrillStateManager::~CDrillStateManager(void)
 {
 }
-
 
 
 CDrillState* CDrillStateManager::GetState(TCHAR* szName)
@@ -33,6 +32,10 @@ CDrillState* CDrillStateManager::GetState(TCHAR* szName)
 	return pStates;
 }
 
+DrillStatus CDrillStateManager::GetStatus(std::vector<CDrillItem>& items)
+{
+	return m_DrillStates["钻进"]->TestMatch(items);
+}
 
 void CDrillStateManager::Init()
 {
@@ -50,22 +53,18 @@ void CDrillStateManager::Init()
 	m_DrillStates["下钻"] = pState;
 	pState1->AddNextState(pState);
 
-	pState1 = pState;
-	pState =  new UnDrillingState;
-	pState1->AddNextState(pState);
 
 	pState1 = pState;
 	pState = new CCirculationState();
 	m_DrillStates["循环"] = pState;
-	((UnDrillingState*)pState1)->AddState(pState);
+	pState1->AddNextState(pState);
 
-
+	pState1 = pState;
 	pState = new CReamingOffState();
 	m_DrillStates["划眼"] = pState;
-	((UnDrillingState*)pState1)->AddState(pState);
+	pState1->AddNextState(pState);
 
 	pState = new CAppendTubeState();
 	m_DrillStates["接单根"] = pState;
 	pState1->AddNextState(pState);
-
 }

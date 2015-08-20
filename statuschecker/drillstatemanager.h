@@ -1,6 +1,8 @@
 #pragma once
 #include <map>
 #include <string>
+#include <vector>
+#include "drilldefine.h"
 class CDrillItem;
 class CDrillState;
 
@@ -10,9 +12,9 @@ public:
 	CDrillStateManager(void);
 	virtual ~CDrillStateManager(void);
 
+	DrillStatus GetStatus(std::vector<CDrillItem>& items);
+
     CDrillState* GetState(TCHAR* szName);
-
-
 	void Init();
 private:
 	std::map<std::string,CDrillState*> m_DrillStates;

@@ -54,24 +54,32 @@ void CDrillState::AddNextState(CDrillState* pNext)
 	m_pNext = pNext;
 }
 
-DrillStatus CDrillState::TestMatch(const CDrillItem& item)
+DrillStatus CDrillState::TestMatch(std::vector<CDrillItem>& items)
 {
-	if (!Match(item)&&m_pNext!=NULL)
+	if (!Match(items)&&m_pNext!=NULL)
 	{
-		return m_pNext->TestMatch(item);
+		return m_pNext->TestMatch(items);
 	}
 	return m_Status; 
 }
 
-bool CDrillState::Match(const CDrillItem& item)
+bool  CDrillState::Match( CDrillItem& item)
 {
 	return item.GetDepthGap()<=m_fDepthGap[1]
-	       && item.GetDepthGap()>=m_fDepthGap[0]
-		   && item.m_fSpp <=m_fSpp[1]
-		   && item.m_fSpp >= m_fSpp[0]
-		   && item.m_fWob <= m_fWob[1]
-		   && item.m_fWob >= m_fWob[0]
-		   && item.m_fBkh <= m_fWoh[1]
-		   && item.m_fBkh >= m_fWoh[0];
+	&& item.GetDepthGap()>=m_fDepthGap[0]
+	&& item.m_fSpp <=m_fSpp[1]
+	&& item.m_fSpp >= m_fSpp[0]
+	&& item.m_fWob <= m_fWob[1]
+	&& item.m_fWob >= m_fWob[0]
+	&& item.m_fBkh <= m_fWoh[1]
+	&& item.m_fBkh >= m_fWoh[0];
+}
 
+bool CDrillState::Match(std::vector<CDrillItem>& items)
+{
+	if (items.size()==0)
+	{
+		return false;
+	}
+	return Match(items[items.size()-1]);
 }

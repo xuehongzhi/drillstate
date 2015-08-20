@@ -1,5 +1,7 @@
 #pragma once
 #include "drilldefine.h"
+#include <vector>
+
 class CDrillItem;
 class CDrillState
 {
@@ -16,9 +18,11 @@ public:
 
 	void AddNextState(CDrillState* pNext);
 
-	DrillStatus TestMatch(const CDrillItem& item);
-	virtual bool  Match(const CDrillItem& item);
+	DrillStatus TestMatch(std::vector<CDrillItem>& items);
+	virtual bool  Match(std::vector<CDrillItem>& items);
+
 protected:
+	bool  Match( CDrillItem& items);
 	float m_fDepthGap[2];
 	float m_fSpp[2]; //ื๊ัน
 	float m_fWob[2]; //ฑรัน
