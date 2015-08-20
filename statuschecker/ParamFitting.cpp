@@ -6,7 +6,9 @@
 #include "myrecordset.h"
 //#include "checkitem.h"
 #include <iostream>
-#include <boost/numeric/interval.hpp>
+#include "drillstatemanager.h"
+#include "drillitemmanager.h"
+#include "drillstate.h"
 
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -24,7 +26,17 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 0;
 	}
 	
+	CDrillStateManager::Instance().Init();
 
+	CDrillState* pState = CDrillStateManager::Instance().GetState("×ê½ø");
+	pState->SetDepthGap(0,0.1);
+
+
+	CDrillItemManager dirllitemmgr;
+	
+	std::cout<<dirllitemmgr.GetStatus(&database,"±±201_8","2015-06-08 21:05:00")<<std::endl;
+
+	database.Close();
 
 	::CoUninitialize();
 

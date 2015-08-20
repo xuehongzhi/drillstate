@@ -3,6 +3,7 @@
 #include <ATLComTime.h>
 #import "msado60.tlb" rename ("EOF", "adoEOF")
 #import "c:\program files\common files\system\ado\msadox.dll"
+
 class CMyDatabase;
 
 class  CMyRecordset 

@@ -19,6 +19,12 @@ CDrillStateManager::~CDrillStateManager(void)
 }
 
 
+CDrillStateManager& CDrillStateManager::Instance()
+{
+	static CDrillStateManager mgr;
+	return mgr;
+}
+
 CDrillState* CDrillStateManager::GetState(TCHAR* szName)
 {
 	CDrillState* pStates = NULL;

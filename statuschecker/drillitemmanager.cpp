@@ -4,27 +4,53 @@
 #include <ATLComTime.h>
 #include "mydatabase.h"
 #include "myrecordset.h"
+#include "drillstatemanager.h"
 
-DrillStatus CDrillItemManager::GetStatus(CMyDatabase* pDatabase,TCHAR* szWell,time_t beginTime,time_t endTime)
+
+CDrillItemManager::CDrillItemManager():m_nTimeSpan(30)
+{
+
+}
+
+CDrillItemManager::~CDrillItemManager()
+{
+
+}
+
+DrillStatus CDrillItemManager::GetStatus(CMyDatabase* pDatabase,TCHAR* szWell,TCHAR* lpszTime)
+{
+	COleDateTime beginTime;
+	if (!beginTime.ParseDateTime(lpszTime))
+	{
+		return UNKOWN;
+	}
+
+	COleDateTime endTime = beginTime+COleDateTimeSpan(0,0,0,m_nTimeSpan);
+	return GetStatus(pDatabase,szWell,beginTime,endTime);
+}
+
+DrillStatus CDrillItemManager::GetStatus(CMyDatabase* pDatabase,TCHAR* szWell,COleDateTime& beginTime,COleDateTime& endTime)
 {
 	
 	std::stringstream ss;
 	ss<<"select time,depth as 最大井深,bitdepth as 钻头深度,spp as 泵压,wob as 钻压,woh as 大钩负荷 from LTD_";
 	ss<<szWell;
-	ss<<" where time between "<<COleDateTime(beginTime).Format("%Y-%m_%d %H-%M-%S")<<" and "<< COleDateTime(endTime).Format("%Y-%m_%d %H-%M-%S");
+	ss<<" where time between '"<<beginTime.Format("%Y-%m-%d %H:%M:%S")<<"' and '"<< endTime.Format("%Y-%m-%d %H:%M:%S")<<"' order by time";
 
 	CMyRecordset rs;
 	if (!rs.Open(CString(ss.str().c_str()),pDatabase))
 	{
 		return UNKOWN;
 	}
-
+	
+   
 	while (!rs.IsEOF())
 	{
 		CDrillItem item;
+		std::string szTime;
+		rs.GetValue("time",szTime);
 		COleDateTime dtTime;
-		rs.GetValue("time",dtTime);
-
+		dtTime.ParseDateTime(szTime.c_str());
 		item.m_curTime = dtTime.m_dt;
 
 		rs.GetValue("最大井深",	item.m_fDepth);
@@ -39,10 +65,6 @@ DrillStatus CDrillItemManager::GetStatus(CMyDatabase* pDatabase,TCHAR* szWell,ti
 	}
 
 
-	return UNKOWN;
+	return CDrillStateManager::Instance().GetStatus(m_Items);
 }
 
-DrillStatus CDrillItemManager::GetStatus()
-{
-	return UNKOWN;
-}

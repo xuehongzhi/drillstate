@@ -16,6 +16,8 @@ public:
 
     CDrillState* GetState(TCHAR* szName);
 	void Init();
+
+	static CDrillStateManager& Instance();
 private:
 	std::map<std::string,CDrillState*> m_DrillStates;
 };
