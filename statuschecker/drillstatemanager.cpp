@@ -70,6 +70,7 @@ void CDrillStateManager::Init()
 	m_DrillStates["划眼"] = pState;
 	pState1->AddNextState(pState);
 
+    pState1 = pState;
 	pState = new CAppendTubeState();
 	m_DrillStates["接单根"] = pState;
 	pState1->AddNextState(pState);
